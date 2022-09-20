@@ -281,6 +281,12 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
 
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Error", "Сите полиња треба да се пополнети!");
+                return View(model);
+            }
+
             var loggedInUserEmail = User.Identity.Name;
 
             var user = await _userManager.FindByEmailAsync(loggedInUserEmail);
