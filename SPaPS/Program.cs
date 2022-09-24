@@ -31,9 +31,23 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = true;
     })
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Home/AccessDenied";
+    options.LogoutPath = "/Home/Index";
+    options.SlidingExpiration = true;
+});
 
 var app = builder.Build();
 

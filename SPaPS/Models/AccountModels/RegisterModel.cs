@@ -20,5 +20,8 @@ namespace SPaPS.Models.AccountModels
         public int CityId { get; set; }
         [Display(Name = "Држава"), Required]
         public int? CountryId { get; set; }
+        [Display(Name = "Улога"), Required]
+        public string? Role { get; set; }
+
     }
 }

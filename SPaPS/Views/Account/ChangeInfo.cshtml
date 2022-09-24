@@ -35,7 +35,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-floating mb-3">
-            <select asp-for="ClientTypeId" class="form-control" asp-items="ViewBag.ReferenceTypesClient">
+            <select asp-for="ClientTypeId" class="form-control" asp-items="@ViewBag.ReferenceTypesClient">
                 <option value="">Избери</option>
             </select>
             <label asp-for="ClientTypeId"></label>
@@ -43,7 +43,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-floating mb-3">
-            <select asp-for="CityId" class="form-control" asp-items="ViewBag.ReferenceTypesCity">
+            <select asp-for="CityId" class="form-control" asp-items="@ViewBag.ReferenceTypesCity">
                 <option value="">Избери</option>
             </select>
             <label asp-for="CityId"></label>
@@ -51,7 +51,7 @@
     </div>
     <div class="col-md-4">
         <div class="form-floating mb-3">
-            <select asp-for="CountryId" class="form-control" asp-items="ViewBag.ReferenceTypesCountry">
+            <select asp-for="CountryId" class="form-control" asp-items="@ViewBag.ReferenceTypesCountry">
                 <option value="">Избери</option>
             </select>
             <label asp-for="CountryId"></label>

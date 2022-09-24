@@ -16,13 +16,15 @@ namespace SPaPS.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SPaPSContext _context;
         private readonly IEmailSenderEnhance _emailService;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, SPaPSContext context, IEmailSenderEnhance emailService)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, SPaPSContext context, IEmailSenderEnhance emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _context = context;
             _emailService = emailService;
         }
@@ -58,6 +60,9 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesClient = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 2).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
+
+            ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
+
             return View();
         }
 
@@ -98,6 +103,8 @@ namespace SPaPS.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            await _userManager.AddToRoleAsync(user, model.Role);
 
             Client client = new Client()
             {

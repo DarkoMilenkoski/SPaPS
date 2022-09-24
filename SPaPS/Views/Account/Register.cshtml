@@ -12,6 +12,14 @@
     <div class="row">
         <div class="col-md-3 col-6">
             <div class="form-floating mb-3">
+                <select asp-for="Role" class="form-control" asp-items="@ViewBag.Roles">
+                    <option value="">Избери</option>
+                </select>
+                <label asp-for="Role"></label>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="form-floating mb-3">
                 <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com">
                 <label asp-for="Email"></label>
             </div>
@@ -41,12 +49,8 @@
             </div>
         </div>
         <div class="col-md-3 col-6">
-            @*<div class="form-floating mb-3">
-                <input asp-for="ClientTypeId" type="text" class="form-control" placeholder="ClientTypeId">
-                <label asp-for="ClientTypeId"></label>
-            </div>*@
             <div class="form-floating mb-3">
-                <select asp-for="ClientTypeId" class="form-control" asp-items="ViewBag.ReferenceTypesClient">
+                <select asp-for="ClientTypeId" class="form-control" asp-items="@ViewBag.ReferenceTypesClient">
                     <option value="">Избери</option>
                 </select>
                 <label asp-for="ClientTypeId"></label>
@@ -54,7 +58,7 @@
         </div>
         <div class="col-md-3 col-6">
             <div class="form-floating mb-3">
-                <select asp-for="CityId" class="form-control" asp-items="ViewBag.ReferenceTypesCity">
+                <select asp-for="CityId" class="form-control" asp-items="@ViewBag.ReferenceTypesCity">
                     <option value="">Избери</option>
                 </select>
                 <label asp-for="CityId"></label>
@@ -62,7 +66,7 @@
         </div>
         <div class="col-md-3 col-6">
             <div class="form-floating mb-3">
-                <select asp-for="CountryId" class="form-control" asp-items="ViewBag.ReferenceTypesCountry"></select>
+                <select asp-for="CountryId" class="form-control" asp-items="@ViewBag.ReferenceTypesCountry"></select>
                 <label asp-for="CountryId"></label>
             </div>
         </div>
