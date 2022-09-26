@@ -43,6 +43,12 @@ namespace SPaPS.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Error", "Сите полиња треба да се пополнети!");
+                return View();
+            }
+
             var result  = await _signInManager.PasswordSignInAsync(userName: model.Email, password: model.Password, isPersistent: false, lockoutOnFailure: true);
 
             if (!result.Succeeded || result.IsLockedOut || result.IsNotAllowed)
@@ -157,6 +163,12 @@ namespace SPaPS.Controllers
 
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Error", "Внесете мејл адреса!");
+                return View();
+            }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -198,7 +210,7 @@ namespace SPaPS.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Error", "Лозинките не се совпаѓаат!");
+                ModelState.AddModelError("Error", "Сите полиња треба да се пополнети!");
                 return View();
             }
 
@@ -228,6 +240,11 @@ namespace SPaPS.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Error", "Лозинките не се совпаѓаат!");
+                return View();
+            }
 
             var loggedInUserEmail = User.Identity.Name;
 
