@@ -8,20 +8,28 @@
 <h2>Промени информации за корисникот</h2>
 <br />
 
-<form asp-action="ChangeInfo" method="post" class="row g-3">
-    <div class="col-md-4">
+<form asp-action="ChangeInfo" method="post" class="row g-3 registerChange">
+    <div class="col-md-3">
+        <div class="form-floating mb-3">
+            <select asp-for="Role" class="form-control" asp-items="@ViewBag.Roles">
+                <option value="">Избери</option>
+            </select>
+            <label asp-for="Role"></label>
+        </div>
+    </div>
+    <div class="col-md-3">
         <div class="form-floating mb-3">
             <input asp-for="Name" type="text" class="form-control" placeholder="Name">
             <label asp-for="Name"></label>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-floating mb-3">
             <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="PhoneNumber">
             <label asp-for="PhoneNumber"></label>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-floating mb-3">
             <input asp-for="IdNo" type="text" class="form-control" placeholder="IdNo">
             <label asp-for="IdNo"></label>
@@ -55,6 +63,28 @@
                 <option value="">Избери</option>
             </select>
             <label asp-for="CountryId"></label>
+        </div>
+    </div>
+    <div class="col-md-3 NoOfEmployees d-none">
+        <div class="form-floating mb-3">
+            <input asp-for="NoOfEmployees" type="number" class="form-control required" placeholder="NoOfEmployees">
+            <label asp-for="NoOfEmployees"></label>
+        </div>
+    </div>
+    <div class="col-md-3 DateOfEstablishment d-none">
+        <div class="form-floating mb-3">
+            <input asp-for="DateOfEstablishment" type="date" class="form-control required" placeholder="DateOfEstablishment">
+            <label asp-for="DateOfEstablishment"></label>
+            <span asp-validation-for="DateOfEstablishment" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6 Activities d-none">
+        <div class="form-group">
+            <label asp-for="Activities" class="control-label"></label>
+            <select asp-for="Activities" asp-items="@ViewBag.Activities" class="form-select dropdown-select required" multiple>
+                <option value="">-- Избери --</option>
+            </select>
+            <span asp-validation-for="Activities" class="text-danger"></span>
         </div>
     </div>
     <div class="col-12">

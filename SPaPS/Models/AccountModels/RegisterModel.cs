@@ -22,6 +22,12 @@ namespace SPaPS.Models.AccountModels
         public int? CountryId { get; set; }
         [Display(Name = "Улога"), Required]
         public string? Role { get; set; }
+        [Display(Name = "Број на вработени")]
+        public int? NoOfEmployees { get; set; }
+        [Display(Name = "Датум на основање")]
+        public DateTime? DateOfEstablishment { get; set; }
+        [Display(Name = "Активности")]
+        public List<int> Activities { get; set; } = new List<int>();
 
     }
 }

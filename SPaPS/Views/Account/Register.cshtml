@@ -8,7 +8,7 @@
 <h2>Регистрирај се</h2>
 <br />
 
-<form asp-action="Register" method="post">
+<form asp-action="Register" class="registerChange" method="post">
     <div class="row">
         <div class="col-md-3 col-6">
             <div class="form-floating mb-3">
@@ -70,9 +70,32 @@
                 <label asp-for="CountryId"></label>
             </div>
         </div>
+        <div class="col-md-3 col-6 NoOfEmployees d-none">
+            <div class="form-floating mb-3">
+                <input asp-for="NoOfEmployees" type="number" class="form-control required" placeholder="NoOfEmployees">
+                <label asp-for="NoOfEmployees"></label>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 DateOfEstablishment d-none">
+            <div class="form-floating mb-3">
+                <input asp-for="DateOfEstablishment" type="date" class="form-control required" placeholder="DateOfEstablishment">
+                <label asp-for="DateOfEstablishment"></label>
+                <span asp-validation-for="DateOfEstablishment" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12 Activities d-none">
+            <div class="form-group">
+                <label asp-for="Activities" class="control-label"></label>
+                <select asp-for="Activities" asp-items="@ViewBag.Activities" class="form-select dropdown-select required" multiple>
+                    <option value="">-- Избери --</option>
+                </select>
+                <span asp-validation-for="Activities" class="text-danger"></span>
+            </div>
+            <br />
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 <p class="col-12 text-center text-danger">@Html.ValidationMessage("Error")</p>

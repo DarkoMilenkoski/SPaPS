@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace SPaPS.Controllers
 {
@@ -49,7 +50,7 @@ namespace SPaPS.Controllers
                 return View();
             }
 
-            var result  = await _signInManager.PasswordSignInAsync(userName: model.Email, password: model.Password, isPersistent: false, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(userName: model.Email, password: model.Password, isPersistent: false, lockoutOnFailure: true);
 
             if (!result.Succeeded || result.IsLockedOut || result.IsNotAllowed)
             {
@@ -68,8 +69,9 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
 
             ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
+            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name");
 
-            return View();
+            return View(new RegisterModel());
         }
 
         [HttpPost]
@@ -78,6 +80,9 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesClient = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 2).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
+
+            ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
+            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name");
 
             if (!ModelState.IsValid)
             {
@@ -123,13 +128,30 @@ namespace SPaPS.Controllers
                 CountryId = model.CountryId
             };
 
+            if (model.Role == "Изведувач")
+            {
+                client.DateEstablished = model.DateOfEstablishment;
+                client.NoOfEmployees = model.NoOfEmployees;
+            }
+
             await _context.Clients.AddAsync(client);
             await _context.SaveChangesAsync();
 
+            if (model.Role == "Изведувач")
+            {
+                List<ClientActivity> clientActivities = model.Activities.Select(x => new ClientActivity()
+                {
+                    ClientId = client.ClientId,
+                    ActivityId = x
+                }).ToList();
+
+                await _context.ClientActivities.AddRangeAsync(clientActivities);
+                await _context.SaveChangesAsync();
+            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var callback = Url.Action(action: "ResetPassword", controller: "Account", values: new { token, email = user.Email}, HttpContext.Request.Scheme);
+            var callback = Url.Action(action: "ResetPassword", controller: "Account", values: new { token, email = user.Email }, HttpContext.Request.Scheme);
 
             /* https://localhost:5001/Account/ResetPassword?token=123asdrew123&email=nikola.stankovski@foxit.mk */
 
@@ -140,7 +162,7 @@ namespace SPaPS.Controllers
                 Username = user.Email,
                 Callback = callback,
                 Token = token,
-                RequestPath = _emailService.PostalRequest(Request),                 
+                RequestPath = _emailService.PostalRequest(Request),
             };
 
             await _emailService.SendEmailAsync(emailSetUp);
@@ -278,12 +300,14 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
 
+            ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
+
             var loggedInUserEmail = User.Identity.Name;
 
             var user = await _userManager.FindByEmailAsync(loggedInUserEmail);
 
             Client? client = await _context.Clients.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
-
+            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ClientActivities.Where(x => x.ClientId == client.ClientId).Select(x => x.ActivityId).ToList());
             ChangeInfoModel model = new ChangeInfoModel()
             {
                 PhoneNumber = user.PhoneNumber,
@@ -292,8 +316,14 @@ namespace SPaPS.Controllers
                 Address = client.Address,
                 IdNo = client.IdNo,
                 CityId = client.CityId,
-                CountryId = client.CountryId
+                CountryId = client.CountryId,
+                NoOfEmployees = client.NoOfEmployees,
+                DateOfEstablishment = client.DateEstablished,
+                Activities = _context.ClientActivities.Where(x => x.ClientId == client.ClientId).Select(x => x.ActivityId).ToList()
             };
+
+
+
             return View(model);
         }
 
@@ -304,6 +334,9 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesClient = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 2).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
+
+            ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
+            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name");
 
             if (!ModelState.IsValid)
             {
@@ -325,10 +358,31 @@ namespace SPaPS.Controllers
             client.CityId = model.CityId;
             client.CountryId = model.CountryId;
 
+            var userRole = await _userManager.GetRolesAsync(user);
+            if (userRole.FirstOrDefault() == "Изведувач")
+            {
+                client.NoOfEmployees = model.NoOfEmployees;
+                client.DateEstablished = model.DateOfEstablishment;
+            }
+
             client.UpdatedOn = DateTime.Now;
 
             _context.Clients.Update(client);
             await _context.SaveChangesAsync();
+
+            if (userRole.FirstOrDefault() == "Изведувач")
+            {
+                List<ClientActivity> clientActivities = model.Activities.Select(x => new ClientActivity()
+                {
+                    ClientId = client.ClientId,
+                    ActivityId = x
+                }).ToList();
+
+                var oldClientActivities = _context.ClientActivities.Where(x => x.ClientId == client.ClientId).ToList();
+                _context.ClientActivities.RemoveRange(oldClientActivities);
+                _context.ClientActivities.UpdateRange(clientActivities);
+                await _context.SaveChangesAsync();
+            }
 
             ModelState.AddModelError("Success", "Успешно променети информации!");
 

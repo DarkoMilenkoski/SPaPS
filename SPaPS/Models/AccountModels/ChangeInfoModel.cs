@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
+using static SPaPS.Models.AccountModels.RegisterModel;
 
 namespace SPaPS.Models.AccountModels
 {
@@ -19,5 +20,13 @@ namespace SPaPS.Models.AccountModels
         public int CityId { get; set; }
         [Display(Name = "Држава"), Required]
         public int? CountryId { get; set; }
+        [Display(Name = "Улога"), Required]
+        public string? Role { get; set; }
+        [Display(Name = "Број на вработени")]
+        public int? NoOfEmployees { get; set; }
+        [Display(Name = "Датум на основање")]
+        public DateTime? DateOfEstablishment { get; set; }
+        [Display(Name = "Активности")]
+        public List<long> Activities { get; set; } = new List<long>();
     }
 }

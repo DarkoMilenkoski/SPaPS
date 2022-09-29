@@ -123,7 +123,15 @@ namespace SPaPS.Controllers
             {
                 return NotFound();
             }
-            return View(service);
+
+            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ServiceActivities.Where(x => x.ServiceId == service.ServiceId).Select(x => x.ActivityId).ToList());
+            vm_Service model = new vm_Service()
+            {
+                ServiceId = (long)id,
+                Description = service.Description,
+                ActivityIds = _context.ServiceActivities.Where(x => x.ServiceId == service.ServiceId).Select(x => x.ActivityId).ToList()
+            };
+            return View(model);
         }
 
         // POST: Services/Edit/5
@@ -131,23 +139,42 @@ namespace SPaPS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ServiceId,Description,CreatedOn,CreatedBy,UpdatedOn,UpdatedBy,IsActive")] Service service)
+        public async Task<IActionResult> Edit(long id, vm_Service model)
         {
-            if (id != service.ServiceId)
+            if (id != model.ServiceId)
             {
                 return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Error", "Сите полиња треба да се пополнети!");
+                return View();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var service = await _context.Services.FindAsync(id);
+                    service.Description = model.Description;
+                    service.UpdatedOn = DateTime.Now;
                     _context.Update(service);
+
+                    List<ServiceActivity> serviceActivities = model.ActivityIds.Select(x => new ServiceActivity()
+                    {
+                        ServiceId = service.ServiceId,
+                        ActivityId = x
+                    }).ToList();
+
+                    var oldServiceActivities = _context.ServiceActivities.Where(x => x.ServiceId == service.ServiceId).ToList();
+                    _context.ServiceActivities.RemoveRange(oldServiceActivities);
+                    _context.ServiceActivities.UpdateRange(serviceActivities);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ServiceExists(service.ServiceId))
+                    if (!ServiceExists(model.ServiceId))
                     {
                         return NotFound();
                     }
@@ -158,7 +185,7 @@ namespace SPaPS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(service);
+            return View(model);
         }
 
         // GET: Services/Delete/5
