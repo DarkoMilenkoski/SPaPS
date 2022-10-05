@@ -124,7 +124,7 @@ namespace SPaPS.Controllers
                 return NotFound();
             }
 
-            ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ServiceActivities.Where(x => x.ServiceId == service.ServiceId).Select(x => x.ActivityId).ToList());
+            ViewBag.ActivityIds = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ServiceActivities.Where(x => x.ServiceId == service.ServiceId).Select(x => x.ActivityId).ToList());
             vm_Service model = new vm_Service()
             {
                 ServiceId = (long)id,

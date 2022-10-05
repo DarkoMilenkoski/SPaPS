@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using SPaPS.Models.CustomModels;
 
 namespace SPaPS.Controllers
 {
@@ -299,12 +300,13 @@ namespace SPaPS.Controllers
             ViewBag.ReferenceTypesClient = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 2).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCity = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 3).ToList(), "ReferenceId", "Description");
             ViewBag.ReferenceTypesCountry = new SelectList(_context.References.Where(x => x.ReferenceTypeId == 4).ToList(), "ReferenceId", "Description");
-
             ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name");
-
             var loggedInUserEmail = User.Identity.Name;
 
             var user = await _userManager.FindByEmailAsync(loggedInUserEmail);
+
+            var userRole = await _userManager.GetRolesAsync(user);
+            /*ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name", userRole.FirstOrDefault());*/
 
             Client? client = await _context.Clients.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
             ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ClientActivities.Where(x => x.ClientId == client.ClientId).Select(x => x.ActivityId).ToList());
@@ -321,8 +323,6 @@ namespace SPaPS.Controllers
                 DateOfEstablishment = client.DateEstablished,
                 Activities = _context.ClientActivities.Where(x => x.ClientId == client.ClientId).Select(x => x.ActivityId).ToList()
             };
-
-
 
             return View(model);
         }
@@ -357,32 +357,24 @@ namespace SPaPS.Controllers
             client.IdNo = model.IdNo;
             client.CityId = model.CityId;
             client.CountryId = model.CountryId;
-
-            var userRole = await _userManager.GetRolesAsync(user);
-            if (userRole.FirstOrDefault() == "Изведувач")
-            {
-                client.NoOfEmployees = model.NoOfEmployees;
-                client.DateEstablished = model.DateOfEstablishment;
-            }
+            client.NoOfEmployees = model.NoOfEmployees;
+            client.DateEstablished = model.DateOfEstablishment;
 
             client.UpdatedOn = DateTime.Now;
 
             _context.Clients.Update(client);
             await _context.SaveChangesAsync();
 
-            if (userRole.FirstOrDefault() == "Изведувач")
+            List<ClientActivity> clientActivities = model.Activities.Select(x => new ClientActivity()
             {
-                List<ClientActivity> clientActivities = model.Activities.Select(x => new ClientActivity()
-                {
-                    ClientId = client.ClientId,
-                    ActivityId = x
-                }).ToList();
+                ClientId = client.ClientId,
+                ActivityId = x
+            }).ToList();
 
-                var oldClientActivities = _context.ClientActivities.Where(x => x.ClientId == client.ClientId).ToList();
-                _context.ClientActivities.RemoveRange(oldClientActivities);
-                _context.ClientActivities.UpdateRange(clientActivities);
-                await _context.SaveChangesAsync();
-            }
+            var oldClientActivities = _context.ClientActivities.Where(x => x.ClientId == client.ClientId).ToList();
+            _context.ClientActivities.RemoveRange(oldClientActivities);
+            _context.ClientActivities.UpdateRange(clientActivities);
+            await _context.SaveChangesAsync();
 
             ModelState.AddModelError("Success", "Успешно променети информации!");
 
