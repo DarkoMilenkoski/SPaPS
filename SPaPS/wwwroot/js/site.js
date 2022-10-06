@@ -65,27 +65,45 @@
         })
     }
 
+    let serviceInput = document.querySelector("#ServiceId");
+    if (serviceInput) {
+        let buildingType = document.querySelector(".BuildingTypeId");
+        let buildingSize = document.querySelector(".BuildingSize");
+        let color = document.querySelector(".Color");
+        let noOfWindows = document.querySelector(".NoOfWindows");
+        let noOfDoors = document.querySelector(".NoOfDoors");
 
-    /*let form = document.querySelector("form");
-    form.addEventListener("submit", function () {
-        e.preventDefault();
-        console.log("test");
-    })*/
+        serviceInput.addEventListener("change", function () {
 
-    /*form.onsubmit = function validateForm() {
-        let formInputs = document.querySelector("form").querySelectorAll("input, select");
-        formInputs.forEach(input => {
-            if (input.classList.contains("required") && input == null)
-                return false;
+            buildingType.classList.add("d-none");
+            buildingSize.classList.add("d-none");
+            color.classList.add("d-none");
+            noOfWindows.classList.add("d-none");
+            noOfDoors.classList.add("d-none");
+
+            let serviceId = serviceInput.value;
+
+            if (serviceId == null) {
+                return;
+            }
+
+            if (serviceId == 1) {
+                buildingType.classList.remove("d-none");
+                noOfWindows.classList.remove("d-none");
+                noOfDoors.classList.remove("d-none");
+            }
+
+            if (serviceId == 2) {
+                buildingType.classList.remove("d-none");
+                buildingSize.classList.remove("d-none");
+                color.classList.remove("d-none");
+            }
+
+            if (serviceId == 3) {
+                buildingType.classList.remove("d-none");
+                buildingSize.classList.remove("d-none");
+            }
         });
-        return true;
+    }
 
-        let form = document.forms[0];
-        let role = form.Role.value;
-        if (role == "Изведувач") {
-            if (form.NoOfEmployees.value == null || form.DateOfEstablishment.value == null || form.Activities.value == null)
-                return false;
-        }
-        return true;
-    };*/
 });

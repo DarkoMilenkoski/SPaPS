@@ -12,6 +12,8 @@ namespace SPaPS.Models
         public int? BuildingSize { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
+        public int? NoOfDoors { get; set; }
+        public int? NoOfWindows { get; set; }
         public string? Color { get; set; }
         public string? Note { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -20,6 +22,6 @@ namespace SPaPS.Models
         public int? UpdatedBy { get; set; }
         public bool? IsActive { get; set; }
 
-        public virtual Service Service { get; set; } = null!;
+        public virtual Service? Service { get; set; } = null!;
     }
 }
