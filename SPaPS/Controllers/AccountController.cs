@@ -153,6 +153,7 @@ namespace SPaPS.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var callback = Url.Action(action: "ResetPassword", controller: "Account", values: new { token, email = user.Email }, HttpContext.Request.Scheme);
+            
 
             /* https://localhost:5001/Account/ResetPassword?token=123asdrew123&email=nikola.stankovski@foxit.mk */
 
@@ -306,7 +307,7 @@ namespace SPaPS.Controllers
             var user = await _userManager.FindByEmailAsync(loggedInUserEmail);
 
             var userRole = await _userManager.GetRolesAsync(user);
-            /*ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name", userRole.FirstOrDefault());*/
+            ViewBag.Roles = new SelectList(_context.AspNetRoles.ToList(), "Name", "Name", userRole.FirstOrDefault());
 
             Client? client = await _context.Clients.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
             ViewBag.Activities = new SelectList(_context.Activities.ToList(), "ActivityId", "Name", _context.ClientActivities.Where(x => x.ClientId == client.ClientId).Select(x => x.ActivityId).ToList());

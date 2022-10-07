@@ -13,7 +13,7 @@
     let dateOfEstInput = document.querySelector("#DateOfEstablishment");
     let activitiesInput = document.querySelector("#Activities");
 
-    if (roleInput == "Изведувач") {
+    if (roleInput && roleInput.value == "Изведувач") {
         noOfEmpDiv.classList.remove("d-none");
         dateOfEstDiv.classList.remove("d-none");
         activitiesDiv.classList.remove("d-none");
@@ -66,44 +66,47 @@
     }
 
     let serviceInput = document.querySelector("#ServiceId");
+
+    let buildingType = document.querySelector(".BuildingTypeId");
+    let buildingSize = document.querySelector(".BuildingSize");
+    let color = document.querySelector(".Color");
+    let noOfWindows = document.querySelector(".NoOfWindows");
+    let noOfDoors = document.querySelector(".NoOfDoors");
+
     if (serviceInput) {
-        let buildingType = document.querySelector(".BuildingTypeId");
-        let buildingSize = document.querySelector(".BuildingSize");
-        let color = document.querySelector(".Color");
-        let noOfWindows = document.querySelector(".NoOfWindows");
-        let noOfDoors = document.querySelector(".NoOfDoors");
+        showFields();
+        serviceInput.addEventListener("change", showFields);
+    }
 
-        serviceInput.addEventListener("change", function () {
+    function showFields() {
+        buildingType.classList.add("d-none");
+        buildingSize.classList.add("d-none");
+        color.classList.add("d-none");
+        noOfWindows.classList.add("d-none");
+        noOfDoors.classList.add("d-none");
 
-            buildingType.classList.add("d-none");
-            buildingSize.classList.add("d-none");
-            color.classList.add("d-none");
-            noOfWindows.classList.add("d-none");
-            noOfDoors.classList.add("d-none");
+        let serviceId = serviceInput.value;
 
-            let serviceId = serviceInput.value;
+        if (serviceId == null) {
+            return;
+        }
 
-            if (serviceId == null) {
-                return;
-            }
+        if (serviceId == 1) {
+            buildingType.classList.remove("d-none");
+            noOfWindows.classList.remove("d-none");
+            noOfDoors.classList.remove("d-none");
+        }
 
-            if (serviceId == 1) {
-                buildingType.classList.remove("d-none");
-                noOfWindows.classList.remove("d-none");
-                noOfDoors.classList.remove("d-none");
-            }
+        if (serviceId == 2) {
+            buildingType.classList.remove("d-none");
+            buildingSize.classList.remove("d-none");
+            color.classList.remove("d-none");
+        }
 
-            if (serviceId == 2) {
-                buildingType.classList.remove("d-none");
-                buildingSize.classList.remove("d-none");
-                color.classList.remove("d-none");
-            }
-
-            if (serviceId == 3) {
-                buildingType.classList.remove("d-none");
-                buildingSize.classList.remove("d-none");
-            }
-        });
+        if (serviceId == 3) {
+            buildingType.classList.remove("d-none");
+            buildingSize.classList.remove("d-none");
+        }
     }
 
 });

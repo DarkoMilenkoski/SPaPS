@@ -20,6 +20,7 @@ namespace SPaPS.Models
         public int CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public int? UpdatedBy { get; set; }
+        public long? ContractorId { get; set; }
         public bool? IsActive { get; set; }
 
         public virtual Service? Service { get; set; } = null!;

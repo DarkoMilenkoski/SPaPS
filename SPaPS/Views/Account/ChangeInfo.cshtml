@@ -11,7 +11,7 @@
 <form asp-action="ChangeInfo" method="post" class="row g-3 registerChange">
     <div class="col-md-3">
         <div class="form-floating mb-3">
-            <select asp-for="Role" class="form-control" asp-items="@ViewBag.Roles">
+            <select asp-for="Role" class="form-control" asp-items="@ViewBag.Roles" readonly>
                 <option value="">Избери</option>
             </select>
             <label asp-for="Role"></label>
